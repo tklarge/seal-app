@@ -1,0 +1,294 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>SEAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000;--panel:#0E1114;--line:#1B2126;--bone:#E8E6E1;--gray:#9AA0A6;--dim:#5A6067;
+    --green:#26A69A;--greenb:#2EBD85;--red:#E2514E;--blue:#4A90D9;--orange:#FF5A1F;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden}
+  body{background:var(--bg);color:var(--bone);font-family:'Archivo',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .deck{display:flex;height:100dvh;width:100vw;overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x mandatory;scrollbar-width:none}
+  .deck::-webkit-scrollbar{display:none}
+  .pg{flex:0 0 100vw;height:100dvh;scroll-snap-align:start;display:flex;flex-direction:column;
+    overflow:hidden;padding-top:env(safe-area-inset-top)}
+
+  .hd{padding:10px 12px 6px;flex:none}
+  .hd1{display:flex;align-items:center;gap:8px}
+  .dot{width:17px;height:17px;border-radius:50%;background:var(--red);flex:none}
+  .sym{font-size:16px;font-weight:500}
+  .chg{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--red);margin:5px 0 7px}
+  .tagrow{display:flex;align-items:center;gap:9px}
+  .bx{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:4px 9px;border-radius:4px;
+    line-height:1.3;text-align:center}
+  .bx-r{border:1px solid var(--red);color:var(--red)}
+  .bx-b{border:1px solid var(--blue);color:#82B8E8}
+  .brand{margin-left:auto;background:#15191D;border-radius:5px;padding:6px 8px;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray);letter-spacing:.08em}
+  .ind{font-size:13px;color:var(--gray);margin-top:8px}
+  .chev{width:30px;height:26px;border:1px solid var(--line);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--gray);
+    font-size:11px;margin-top:8px}
+
+  .plot{flex:1;min-height:0;position:relative}
+  .plot svg{width:100%;height:100%;display:block}
+  .tvmark{position:absolute;left:12px;bottom:24px;font-family:'IBM Plex Mono',monospace;
+    font-size:13px;color:#3A4046;letter-spacing:.1em}
+
+  .tbar{display:flex;align-items:center;gap:18px;padding:11px 14px;border-top:1px solid var(--line);
+    flex:none}
+  .tbar span{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gray)}
+  .tbar .lead{display:flex;align-items:center;gap:7px;color:var(--bone)}
+  .tdot{width:15px;height:15px;border-radius:50%;background:var(--red)}
+
+  .nav{display:flex;border-top:1px solid var(--line);flex:none;
+    padding:9px 0 calc(12px + env(safe-area-inset-bottom))}
+  .navi{flex:1;text-align:center;font-size:11px;color:var(--dim)}
+  .navi.on{color:var(--bone)}
+  .navi i{display:block;font-style:normal;font-size:19px;margin-bottom:4px;color:inherit}
+
+  .body{padding:12px 16px 0;flex:1;min-height:0;overflow:hidden}
+  .lab{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--dim)}
+  .big{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:500;
+    letter-spacing:-.02em;margin-top:3px}
+  .delta{font-family:'IBM Plex Mono',monospace;font-size:13px;margin-top:4px}
+  .tabs{display:flex;gap:4px;margin:16px 0 10px}
+  .tab{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim);
+    padding:6px 11px;border-radius:5px}
+  .tab.on{background:var(--panel);color:var(--bone)}
+  .ri{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .tick{width:34px;height:34px;border-radius:50%;background:var(--panel);display:flex;
+    align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;
+    font-size:10px;color:var(--gray);flex:none}
+  .nm{font-size:15px;font-weight:500}
+  .sm{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);margin-top:2px}
+  .rt{margin-left:auto;text-align:right}
+  .rt .v{font-family:'IBM Plex Mono',monospace;font-size:14px}
+  .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;
+    padding:3px 7px;border-radius:3px;margin-top:3px}
+  .p-bear{background:#2A1414;color:#F09595}
+  .p-side{background:#1B1F23;color:#A6ADB4}
+  .p-off{background:#2A1E08;color:#FAC775}
+  .card{background:var(--panel);border-radius:10px;padding:13px 15px;margin-top:12px}
+  .kv{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;
+    font-size:12px;padding:5px 0;color:var(--gray)}
+  .kv b{color:var(--bone);font-weight:500}
+  .dots{position:fixed;left:0;right:0;bottom:calc(66px + env(safe-area-inset-bottom));
+    display:flex;justify-content:center;gap:6px;pointer-events:none;z-index:9}
+  .dt{width:5px;height:5px;border-radius:50%;background:#2A3036}
+  .dt.on{background:var(--orange)}
+</style>
+
+<div class="deck" id="deck">
+
+  <section class="pg">
+    <div class="body">
+      <div class="lab">Paper book · momentumseal · 10k</div>
+      <div class="big">$39,829.58</div>
+      <div class="delta" style="color:var(--red)">−$170.42 &nbsp; −0.43% all time</div>
+      <div class="tabs"><span class="tab">24h</span><span class="tab">7d</span>
+        <span class="tab on">30d</span><span class="tab">90d</span><span class="tab">All</span></div>
+      <svg viewBox="0 0 340 110" style="width:100%;height:110px" role="img" aria-label="Equity curve trending down">
+        <line x1="0" y1="26" x2="340" y2="26" stroke="#1B2126" stroke-dasharray="2 5"/>
+        <polyline points="0,26 28,21 57,36 85,31 113,48 142,42 170,58 198,51 227,67 255,61 283,77 311,71 340,81"
+          fill="none" stroke="#E2514E" stroke-width="1.8"/>
+      </svg>
+      <div class="lab" style="margin-top:14px">Holdings · 4 of 12 assets</div>
+      <div class="ri"><div class="tick">BTC</div><div><div class="nm">Bitcoin</div>
+        <div class="sm">22 trades · 28.6% win</div></div>
+        <div class="rt"><div class="v" style="color:var(--red)">−163.46</div><span class="pill p-bear">bear</span></div></div>
+      <div class="ri"><div class="tick">SOL</div><div><div class="nm">Solana</div>
+        <div class="sm">15 trades · 40.0% win</div></div>
+        <div class="rt"><div class="v" style="color:var(--greenb)">+139.41</div><span class="pill p-side">sideways</span></div></div>
+      <div class="ri"><div class="tick">ETH</div><div><div class="nm">Ethereum</div>
+        <div class="sm">12 trades · 33.3% win</div></div>
+        <div class="rt"><div class="v" style="color:var(--red)">−127.50</div><span class="pill p-side">sideways</span></div></div>
+      <div class="ri" style="border:none"><div class="tick">XRP</div><div><div class="nm">XRP</div>
+        <div class="sm">19 trades · 31.6% win</div></div>
+        <div class="rt"><div class="v" style="color:var(--red)">−18.87</div><span class="pill p-bear">bear</span></div></div>
+    </div>
+    <div class="nav">
+      <div class="navi on"><i>▤</i>Book</div><div class="navi"><i>▦</i>Chart</div>
+      <div class="navi"><i>◈</i>Brains</div><div class="navi"><i>≡</i>Ledger</div>
+      <div class="navi"><i>☰</i>Menu</div>
+    </div>
+  </section>
+
+  <section class="pg">
+    <div class="hd">
+      <div class="hd1"><div class="dot"></div><div class="sym">BTC/USD Perp</div></div>
+      <div class="chg">62,881.50 &nbsp; −1,519.40</div>
+      <div class="tagrow">
+        <div class="bx bx-r">62,881.50<br>BEAR</div>
+        <div class="mono" style="font-size:13px;color:var(--dim)">0.00</div>
+        <div class="bx bx-b">◈ −0.50<br>MACRO</div>
+        <div class="brand">SEAL</div>
+      </div>
+      <div class="ind">SEAL Regime V1</div>
+      <div class="chev">^</div>
+    </div>
+    <div class="plot">
+      <svg id="ch" preserveAspectRatio="none" role="img"
+        aria-label="Fifteen minute candles with regime cloud and trade markers"></svg>
+      <div class="tvmark">SEAL</div>
+    </div>
+    <div class="tbar">
+      <span class="lead"><span class="tdot"></span>BTC</span>
+      <span>15m</span><span>✎</span><span>⚙</span>
+      <span style="margin-left:auto">↺</span><span>↻</span>
+    </div>
+    <div class="nav">
+      <div class="navi"><i>▤</i>Book</div><div class="navi on"><i>▦</i>Chart</div>
+      <div class="navi"><i>◈</i>Brains</div><div class="navi"><i>≡</i>Ledger</div>
+      <div class="navi"><i>☰</i>Menu</div>
+    </div>
+  </section>
+
+  <section class="pg">
+    <div class="body">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span style="font-size:16px;font-weight:500">System state</span>
+        <span class="pill p-off" style="margin:0">buys off</span>
+      </div>
+      <div class="lab" style="margin-top:14px">Macro bias</div>
+      <div class="big" style="color:var(--red)">−0.50</div>
+      <div class="delta" style="color:var(--gray)">BEARISH · 8 events · 8h window</div>
+      <div class="tabs"><span class="tab on">LIVE</span><span class="tab">30m</span>
+        <span class="tab">8h</span><span class="tab">1D</span><span class="tab">7D</span></div>
+      <svg viewBox="0 0 340 88" style="width:100%;height:88px" role="img" aria-label="Macro bias drifting negative">
+        <line x1="0" y1="44" x2="340" y2="44" stroke="#1B2126"/>
+        <polyline points="0,40 38,42 76,36 114,47 152,53 190,49 228,62 266,67 304,71 340,69"
+          fill="none" stroke="#E2514E" stroke-width="1.8"/>
+      </svg>
+      <div class="card">
+        <div class="kv"><span>Anomaly stress</span><b>0.215</b></div>
+        <div class="kv"><span>Size multiplier</span><b>×1.00</b></div>
+        <div class="kv"><span>Veto threshold</span><b>0.90 · not hit</b></div>
+        <div class="kv"><span>Fear &amp; Greed</span><b>29 · fear</b></div>
+        <div class="kv"><span>Regimes</span><b>5 bear · 4 side · 3 bull</b></div>
+      </div>
+      <div class="lab" style="margin-top:16px">Latest signal</div>
+      <div class="card" style="margin-top:7px;border-left:2px solid var(--greenb)">
+        <div style="font-size:13px;line-height:1.45">Fed rate hike odds fall as retail sales soften</div>
+        <div class="sm">macro · bull +1 · 12m ago</div>
+      </div>
+      <div class="card" style="margin-top:9px;border-left:2px solid var(--red)">
+        <div style="font-size:13px;line-height:1.45">BofA calls for three more hikes after July CPI</div>
+        <div class="sm">macro · bear −1 · 41m ago</div>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="navi"><i>▤</i>Book</div><div class="navi"><i>▦</i>Chart</div>
+      <div class="navi on"><i>◈</i>Brains</div><div class="navi"><i>≡</i>Ledger</div>
+      <div class="navi"><i>☰</i>Menu</div>
+    </div>
+  </section>
+
+</div>
+
+<div class="dots"><div class="dt"></div><div class="dt on"></div><div class="dt"></div></div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck');
+  deck.scrollLeft=window.innerWidth;
+  var dts=document.querySelectorAll('.dt');
+  deck.addEventListener('scroll',function(){
+    var i=Math.round(deck.scrollLeft/window.innerWidth);
+    dts.forEach(function(d,k){d.classList.toggle('on',k===i);});
+  },{passive:true});
+
+  var svg=document.getElementById('ch');
+  function draw(){
+    var W=svg.clientWidth||360, H=svg.clientHeight||420;
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    var AX=W-64, TOP=6, BOT=H-24;
+    var N=46,bars=[],p=62450,seed=11;
+    function rnd(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;}
+    for(var i=0;i<N;i++){
+      var d=i<28?46:(i<38?-28:34);
+      var o=p,c=p+d*(0.4+rnd()*1.2),h=Math.max(o,c)+rnd()*34,l=Math.min(o,c)-rnd()*34;
+      bars.push({o:o,h:h,l:l,c:c});p=c;
+    }
+    var hi=-1e9,lo=1e9;bars.forEach(function(b){if(b.h>hi)hi=b.h;if(b.l<lo)lo=b.l;});
+    var pd=(hi-lo)*0.18;hi+=pd;lo-=pd;
+    function y(v){return TOP+(hi-v)/(hi-lo)*(BOT-TOP);}
+    var step=(AX-8)/N,bw=Math.max(3,step*0.6),s='';
+
+    var ma=[],lowb=[];
+    for(var i=0;i<N;i++){var w=Math.min(7,i+1),sum=0;
+      for(var k=0;k<w;k++)sum+=bars[i-k].c;
+      ma.push(sum/w);lowb.push(sum/w-(hi-lo)*0.13);}
+    var up='',dn='',dnr='';
+    for(var i=0;i<N;i++){var x=(8+i*step+bw/2).toFixed(1);
+      up+=(i?'L':'M')+x+' '+y(ma[i]).toFixed(1)+' ';
+      dn+=(i?'L':'M')+x+' '+y(lowb[i]).toFixed(1)+' ';}
+    for(var i=N-1;i>=0;i--){dnr+='L'+(8+i*step+bw/2).toFixed(1)+' '+y(lowb[i]).toFixed(1)+' ';}
+    s+='<path d="'+up+dnr+'Z" fill="#26A69A" fill-opacity="0.17"/>';
+    s+='<path d="'+up+'" fill="none" stroke="#2EBD85" stroke-width="1.6"/>';
+
+    var rl='';
+    for(var i=0;i<N;i++){var x=(8+i*step+bw/2).toFixed(1);
+      rl+=(i?'L':'M')+x+' '+y(lo+(hi-lo)*(0.06+i*0.013)).toFixed(1)+' ';}
+    s+='<path d="'+rl+'" fill="none" stroke="#E2514E" stroke-width="2"/>';
+
+    [0.30,0.52,0.70].forEach(function(f){
+      var yy=y(lo+(hi-lo)*f);
+      s+='<line x1="'+(8+step*6)+'" y1="'+yy.toFixed(1)+'" x2="'+AX+'" y2="'+yy.toFixed(1)+'" stroke="#2EBD85" stroke-width="0.9" stroke-opacity="0.55"/>';
+    });
+
+    for(var i=0;i<N;i++){
+      var b=bars[i],x=8+i*step,cx=x+bw/2,col=b.c>=b.o?'#26A69A':'#E2514E';
+      s+='<line x1="'+cx.toFixed(1)+'" y1="'+y(b.h).toFixed(1)+'" x2="'+cx.toFixed(1)+'" y2="'+y(b.l).toFixed(1)+'" stroke="'+col+'" stroke-width="1.1"/>';
+      var yt=y(Math.max(b.o,b.c)),hg=Math.max(1.3,Math.abs(y(b.o)-y(b.c)));
+      s+='<rect x="'+x.toFixed(1)+'" y="'+yt.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hg.toFixed(1)+'" fill="'+col+'"/>';
+    }
+
+    for(var g=0;g<11;g++){
+      var v=hi-(hi-lo)*(g/10),yy=y(v);
+      s+='<text x="'+(AX+7)+'" y="'+(yy+4).toFixed(1)+'" fill="#6B7278" font-size="11" font-family="IBM Plex Mono">'+Math.round(v).toLocaleString()+'</text>';
+    }
+    function axtag(v,fill,ink,strokeOnly){
+      var yy=y(v);
+      if(strokeOnly)
+        s+='<rect x="'+(AX+3)+'" y="'+(yy-8).toFixed(1)+'" width="58" height="16" rx="2" fill="none" stroke="'+fill+'"/>'+
+           '<text x="'+(AX+7)+'" y="'+(yy+4).toFixed(1)+'" fill="'+fill+'" font-size="11" font-family="IBM Plex Mono">'+Math.round(v).toLocaleString()+'</text>';
+      else
+        s+='<rect x="'+(AX+3)+'" y="'+(yy-8).toFixed(1)+'" width="58" height="16" rx="2" fill="'+fill+'"/>'+
+           '<text x="'+(AX+7)+'" y="'+(yy+4).toFixed(1)+'" fill="'+ink+'" font-size="11" font-family="IBM Plex Mono">'+Math.round(v).toLocaleString()+'</text>';
+    }
+    axtag(lo+(hi-lo)*0.70,'#2EBD85',null,true);
+    axtag(lo+(hi-lo)*0.30,'#E2514E',null,true);
+    axtag(bars[N-1].c,'#E2514E','#180404',false);
+    var ly=y(bars[N-1].c);
+    s+='<line x1="0" y1="'+ly.toFixed(1)+'" x2="'+AX+'" y2="'+ly.toFixed(1)+'" stroke="#E2514E" stroke-width="0.7" stroke-dasharray="3 5"/>';
+
+    function tag(i,txt,buy){
+      var b=bars[i],x=8+i*step+bw/2,fill=buy?'#2EBD85':'#E2514E',ink=buy?'#04120E':'#1A0404';
+      var w=txt.length*7.2+16,h=20,ty=buy?y(b.l)+14:y(b.h)-34;
+      var tx=Math.max(2,Math.min(AX-w-2,x-w/2));
+      s+='<rect x="'+tx.toFixed(1)+'" y="'+ty.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h+'" rx="4" fill="'+fill+'"/>';
+      s+='<circle cx="'+(tx+w-10).toFixed(1)+'" cy="'+(ty+10).toFixed(1)+'" r="4" fill="'+ink+'" fill-opacity="0.45"/>';
+      s+='<text x="'+(tx+8).toFixed(1)+'" y="'+(ty+14).toFixed(1)+'" fill="'+ink+'" font-size="11" font-weight="500" font-family="Archivo">'+txt+'</text>';
+      var py=buy?ty:ty+h;
+      s+='<path d="M'+(x-6).toFixed(1)+' '+py.toFixed(1)+' L'+(x+6).toFixed(1)+' '+py.toFixed(1)+' L'+x.toFixed(1)+' '+(buy?py-9:py+9).toFixed(1)+' Z" fill="'+fill+'"/>';
+    }
+    tag(7,'BUY',true); tag(19,'SELL',false); tag(27,'BUY',true); tag(40,'SELL',false);
+
+    var lb=['09:15','10:30','11:45','13:00','14:15'];
+    for(var g=0;g<5;g++)
+      s+='<text x="'+(10+g*(AX-30)/5).toFixed(1)+'" y="'+(H-7)+'" fill="#6B7278" font-size="11" font-family="IBM Plex Mono">'+lb[g]+'</text>';
+    svg.innerHTML=s;
+  }
+  draw();
+  window.addEventListener('resize',draw);
+})();
+</script>
